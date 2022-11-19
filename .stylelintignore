@@ -1,0 +1,10 @@
+/node_modules
+/src/**/*.js
+/src/**/*.ts
+/src/**/*.tsx
+/src/**/*.snap
+/src/**/*.svg
+/src/**/*.ttf
+/src/**/*.png
+/build
+/public

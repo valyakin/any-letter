@@ -1,0 +1,21 @@
+{
+  "extends": ["stylelint-config-standard-scss", "stylelint-config-idiomatic-order"],
+  "defaultSeverity": "warning",
+  "plugins": [
+		"stylelint-order"
+	],
+  "rules": {
+    "color-hex-case": "upper",
+    "scss/at-import-partial-extension": "always",
+    "string-quotes": "double",
+    "block-no-empty": null,
+    "scss/at-mixin-parentheses-space-before": "always",
+    "value-list-comma-newline-after": null,
+    "color-function-notation": "legacy",
+    "declaration-colon-newline-after": null,
+    "selector-list-comma-newline-after": null,
+    "no-descending-specificity": null,
+    "alpha-value-notation": "number",
+    "linebreaks": "unix"
+  }
+}
