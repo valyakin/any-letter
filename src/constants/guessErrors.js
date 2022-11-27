@@ -1,0 +1,3 @@
+export const UNKNOWN_WORD = 'UNKNOWN_WORD'
+export const NOT_ENOUGH_LETTERS = 'NOT_ENOUGH_LETTERS'
+export const GAME_ENDED = 'GAME_ENDED'

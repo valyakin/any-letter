@@ -1,12 +1,15 @@
-export * as GAME_EVENTS from './gameEvents'
+export * as GUESS_ERRORS from './guessErrors'
+export * as GAME_ACTIONS from './gameActions'
+export * as GUESS_STATES from './guessStates'
+export * from './nouns'
 
-export const LETTERS = [
+export const KEYBOARD = [
   'ЙЦУКЕНГШЩЗХЪ',
   'ФЫВАПРОЛДЖЭ',
   'ЯЧСМИТЬБЮ',
 ]
 
-export const ALLOWED_LETTERS = 'ЙЦУКЕНГШЩЗХФЫВАПРОЛДЖЭЯЧСМИТЬБЮ'
+export const ALLOWED_LETTERS = 'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ'
 export const LETTER_MAPPING = {
   'Q': 'Й',
   'W': 'Ц',
@@ -19,7 +22,9 @@ export const LETTER_MAPPING = {
   'O': 'Щ',
   'P': 'З',
   '[': 'Х',
+  '{': 'Х',
   ']': 'Ъ',
+  '}': 'Ъ',
   'A': 'Ф',
   'S': 'Ы',
   'D': 'В',
@@ -30,7 +35,9 @@ export const LETTER_MAPPING = {
   'K': 'Л',
   'L': 'Д',
   ';': 'Ж',
+  ':': 'Ж',
   '\'': 'Э',
+  '"': 'Э',
   'Z': 'Я',
   'X': 'Ч',
   'C': 'С',
@@ -39,15 +46,7 @@ export const LETTER_MAPPING = {
   'N': 'Т',
   'M': 'Ь',
   ',': 'Б',
+  '<': 'Б',
   '.': 'Ю',
-}
-
-export const toValidLetter = (letter) => {
-  const l = letter.toUpperCase()
-  if (ALLOWED_LETTERS.includes(l)) return l
-
-  const mapped = LETTER_MAPPING[l]
-  if (ALLOWED_LETTERS.includes(mapped)) return mapped
-
-  return false
+  '>': 'Ю',
 }

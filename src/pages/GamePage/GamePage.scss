@@ -8,118 +8,15 @@
   background-color: rgba(skyblue, 0.08);
   outline: none;
 
-  .game-field {
-    display: grid;
-    width: 500px;
-    height: 600px;
-    padding: 8px;
-    border: 3px solid #EAEAEA;
-    border-radius: 16px;
-    background-color: #FAFAFA;
-    gap: 8px;
-    grid-template-rows: repeat(6, 1fr);
-
-    .row {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(5, 1fr);
-
-      &.current {
-        .cell {
-          &:hover {
-            background-color: rgba(skyblue, 0.3);
-          }
-
-          &.focused {
-            background-color: rgba(skyblue, 0.7);
-          }
-        }
-      }
-
-      .cell {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid skyblue;
-        border-radius: 8px;
-        background-color: white;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-
-        &.wrong {
-          border-color: #BDBDBD;
-          background-color: #BDBDBD;
-          color: #FAFAFA;
-        }
-
-        &.misplaced {
-          border-color: #FFC34C;
-          background-color: #FFC34C;
-          color: #FAFAFA;
-        }
-
-        &.correct {
-          border-color: skyblue;
-          background-color: skyblue;
-          color: #FAFAFA;
-        }
-
-        span {
-          font-size: 72px;
-          font-weight: 100;
-        }
-      }
-    }
-  }
-}
-
-.root-keyboard {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-top: 24px;
-
-  .row {
+  .game-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    transition: opacity 0.2s ease-in-out;
 
-    .letter {
-      display: flex;
-      width: 40px;
-      height: 40px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid skyblue;
-      border-radius: 8px;
-      margin: 0 4px;
-      background-color: #FAFAFA;
-      cursor: pointer;
-      transition: border-color, color, background-color 0.2s ease-in-out;
-
-      &.wrong {
-        border-color: #BDBDBD;
-        background-color: #BDBDBD;
-        color: #FAFAFA;
-      }
-
-      &.misplaced {
-        border-color: #FFC34C;
-        background-color: #FFC34C;
-        color: #FAFAFA;
-      }
-
-      &.correct {
-        border-color: skyblue;
-        background-color: skyblue;
-        color: #FAFAFA;
-      }
-
-      &:hover:not(.correct, .wrong, .misplaced) {
-        background-color: #EEE;
-      }
+    &.faded {
+      opacity: 0.4;
     }
   }
 }

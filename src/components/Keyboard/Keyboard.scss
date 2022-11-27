@@ -1,0 +1,78 @@
+.root-keyboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 24px;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 8px;
+
+    .key {
+      display: flex;
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid skyblue;
+      border-radius: 8px;
+      margin: 0 4px;
+      background-color: #FAFAFA;
+      cursor: pointer;
+      transition: border-color, color, background-color 0.2s ease-in-out;
+      user-select: none;
+
+      &:hover:not(.correct, .wrong, .misplaced) {
+        background-color: #EEE;
+      }
+    }
+  }
+
+  .controls {
+    .row {
+      width: 40px;
+      justify-content: flex-start;
+    }
+
+    .key {
+      &.enter {
+        min-width: 64px;
+
+        // position: relative;
+        margin-left: -20px;
+      }
+
+      &.del {
+        min-width: 40px;
+      }
+    }
+  }
+
+  .letters {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .key {
+      &.wrong {
+        border-color: #BDBDBD;
+        background-color: #BDBDBD;
+        color: #FAFAFA;
+      }
+
+      &.misplaced {
+        border-color: #FFC34C;
+        background-color: #FFC34C;
+        color: #FAFAFA;
+      }
+
+      &.correct {
+        border-color: skyblue;
+        background-color: skyblue;
+        color: #FAFAFA;
+      }
+    }
+  }
+}

@@ -1,183 +1,87 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { clone } from '@src/utils'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { CSSTransition } from 'react-transition-group'
+import { Game, Keyboard, Splash } from '@src/components'
+import { GameController } from '@src/classes'
 import './GamePage.scss'
-import { GAME_EVENTS, LETTERS, toValidLetter } from '@src/constants'
-import { GameController } from '@src/GameController'
 
-const controller = new GameController()
+const WORD_LENGTH = 5
+const MAX_TRIES = 6
+
+const controller = new GameController(WORD_LENGTH, MAX_TRIES)
 
 const GamePage = () => {
-  const [, setWin] = useState(false)
-  const [currentRow, setCurrentRow] = useState(null)
-  const ref = useRef(null)
-  const [focusedCell, setFocusedCell] = useState(0)
-  const [word, setWord] = useState(Array(controller.wordLength).fill(''))
+  const [inProp, setInProp] = useState(false)
+  const [win, setWin] = useState(false)
+  const [lose, setLose] = useState(false)
+  const [answer, setAnswer] = useState(null)
+  const wrapperRef = useRef(null)
+  const gameRef = useRef(null)
+  const splashRef = useRef(null)
+  const [gameState, setGameState] = useState(null)
 
-  const field = useMemo(() => {
-    const f = controller.guesses.map(g => g.split(''))
-    if (!controller.gameEnded) {
-      f[f.length] = word
-    }
-
-    for (let i = f.length; i<controller.maxTries; i++) {
-      f[i] = Array(controller.wordLength).fill('')
-    }
-
-    return f
-  }, [word])
-
-  useEffect(() => {
-    controller.on(GAME_EVENTS.NEXT_TRY, (newtry) => {
-      setCurrentRow(newtry)
-      setWord(Array(controller.wordLength).fill(''))
-    })
-    controller.on(GAME_EVENTS.GAME_WIN, () => {
-      setWin(true)
-      setCurrentRow(-1)
-    })
-
-    controller.start()
-    return () => controller.removeAllListeners()
+  const handleGameStateChange = useCallback((state) => {
+    setGameState(state)
   }, [])
 
   useEffect(() => {
-    ref?.current?.focus()
-  }, [ref])
+    wrapperRef?.current?.focus()
+  }, [wrapperRef])
 
-  const changeCurrentLetter = useCallback((letter) => {
-    setWord((prev) => {
-      const newWord = clone(prev)
-      newWord[focusedCell] = letter
-      return newWord
-    })
-  }, [focusedCell])
-
-  const handleFocusChange = useCallback((row, cell) => {
-    if (row === currentRow) {
-      setFocusedCell(cell)
-    }
-  }, [currentRow])
-
-  const handleTryGuess = useCallback(() => {
-    const ok = controller.guess(word)
-    if (ok) {
-      if(controller.gameEnded) {
-        setFocusedCell(-1)
-      } else {
-        setFocusedCell(0)
-      }
-    }
-  }, [word])
+  useEffect(() => {
+    gameRef?.current?.startNewGame()
+  }, [gameRef])
 
   const handleKeyDown = useCallback((e) => {
-    const nextFocus = Math.min(word.length - 1, focusedCell + 1)
-    const prevFocus = Math.max(0, focusedCell -1)
-
     if (!e.ctrlKey) {
-      if (e.key?.length === 1) {
-        const letter = toValidLetter(e.key)
-        if (letter) {
-          changeCurrentLetter(letter)
-          setFocusedCell(nextFocus)
-        }
-      } else {
-        switch (e.key) {
-        case 'ArrowLeft':
-          setFocusedCell(prevFocus)
-          break
-        case 'ArrowRight':
-          setFocusedCell(nextFocus)
-          break
-        case 'Backspace':
-          changeCurrentLetter('')
-          setFocusedCell(prevFocus)
-          break
-        case 'Delete':
-          changeCurrentLetter('')
-          break
-        case 'Enter':
-          handleTryGuess()
-          break
-        default:
-          break
-        }
-      }
+      gameRef?.current?.receiveKey(e.key)
     }
-  }, [word, focusedCell, changeCurrentLetter, handleTryGuess])
+  }, [])
 
-  const handleLetterClick = useCallback((letter) => {
-    changeCurrentLetter(letter)
-    const nextFocus = Math.min(word.length - 1, focusedCell + 1)
-    setFocusedCell(nextFocus)
-  }, [changeCurrentLetter, word, focusedCell])
+  const handleKeyClick = useCallback((key) => {
+    gameRef?.current?.receiveKey(key)
+  }, [])
 
-  return <div ref={ref} tabIndex={-1} className='root-game-page' onKeyDown={handleKeyDown} >
-    <GameField
-      field={field}
-      focusedCell={focusedCell}
-      currentRow={currentRow}
-      onFocus={handleFocusChange}
-    />
-    <Keyboard onLetterClick={handleLetterClick}/>
-  </div>
-}
+  const handleGameEnd = useCallback(({ win, lose, answer }) => {
+    setInProp(true)
+    setWin(win)
+    setLose(lose)
+    setAnswer(answer)
+  }, [])
 
-const GameField = ({ edit, field, onFocus, focusedCell, currentRow }) => {
-  return <div className='game-field'>
+  const handleStartNewGame = useCallback(() => {
+    setInProp(false)
+    gameRef?.current?.startNewGame()
+
+    setTimeout(() => {
+      setWin(false)
+      setLose(false)
+      setAnswer(null)
+      wrapperRef?.current?.focus()
+    }, 300)
+  }, [])
+
+  return <div ref={wrapperRef} tabIndex={-1} className='root-game-page' onKeyDown={handleKeyDown}>
+    <div className={clsx('game-wrapper', inProp && 'faded')}>
+      <Game
+        ref={gameRef}
+        start={controller.start}
+        guess={controller.guess}
+        rowNumber={controller.maxTries}
+        cellNumber={controller.wordLength}
+        onGameEnd={handleGameEnd}
+        onStateChange={handleGameStateChange}
+      />
+      <Keyboard
+        onKeyClick={handleKeyClick}
+        guesses={gameState?.guesses}
+        guessesStates={gameState?.guessesStates}
+      />
+    </div>
     {
-      field.map((row, i) => <Row
-        className={clsx(currentRow === i && 'current')}
-        key={i}
-        row={row}
-        rowNumber={i}
-        focusedCell={currentRow === i && focusedCell}
-        onFocus={cell => onFocus(i, cell)}
-      />)
-    }
-  </div>
-}
-
-const Row = ({ row, onFocus, focusedCell, className, rowNumber }) => {
-  return <div className={clsx('row', className)}>
-    {
-      row.map((letter, i) => <Cell
-        key={i}
-        letter={letter}
-        cellNumber={i}
-        rowNumber={rowNumber}
-        focused={focusedCell === i}
-        onFocus={letter => onFocus(i)}
-      />)
-    }
-  </div>
-}
-
-const Cell = ({ letter, onFocus, focused, rowNumber, cellNumber }) => {
-  return <div className={clsx('cell', focused && 'focused', controller.guessesState[rowNumber]?.[cellNumber])} onClick={onFocus}>
-    <span>{letter}</span>
-  </div>
-}
-
-const Keyboard = ({ onLetterClick }) => {
-  return <div className='root-keyboard'>
-    {
-      LETTERS.map(row => <div key={row} className='row'>
-        {
-          row.split('').map(letter => (
-            <div
-              key={letter}
-              className={clsx(
-                'letter',
-                controller.keyboardState[letter]
-              )}
-              onClick={() => onLetterClick(letter)}
-            >
-              <span>{letter}</span>
-            </div>)
-          )
-        }
-      </div>)
+      <CSSTransition unmountOnExit nodeRef={splashRef} in={inProp} timeout={200} classNames='root-splash'>
+        <Splash ref={splashRef} win={win} lose={lose} answer={answer} onStartNewGame={handleStartNewGame}/>
+      </CSSTransition>
     }
   </div>
 }
